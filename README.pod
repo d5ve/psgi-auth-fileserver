@@ -11,7 +11,7 @@ is a bit clunky anyhow).
 
 =head1 AUTHOR
 
-Dave Webb L<mailto:psgi-auth-fileserver.github@d5vd.com>
+Dave Webb L<psgi-auth-fileserver.github@d5ve.com|mailto:psgi-auth-fileserver.github@d5ve.com>
 
 =head1 LICENSE
 
