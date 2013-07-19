@@ -2,12 +2,26 @@
 
 psgi-auth-fileserver - PSGI-based HTTP fileserver with cookie auth
 
+=head1 STATUS
+
+NO RUNNING CODE YET
+
 =head1 DESCRIPTION
 
 Simple fileserver app using PSGI. Supports authentication by cookie header.
 
 Created because some device browsers don't support basic auth (and basic auth
 is a bit clunky anyhow).
+
+=head1 DEPENDENCIES
+
+=over 4
+
+=item * Plack
+
+=item * Plack::Middleware::Session
+
+=back
 
 =head1 AUTHOR
 
