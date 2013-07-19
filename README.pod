@@ -1,0 +1,25 @@
+=head1 NAME
+
+psgi-auth-fileserver - PSGI-based HTTP fileserver with cookie auth
+
+=head1 DESCRIPTION
+
+Simple fileserver app using PSGI. Supports authentication by cookie header.
+
+Created because some device browsers don't support basic auth (and basic auth
+is a bit clunky anyhow).
+
+=head1 AUTHOR
+
+Dave Webb L<psgi-auth-fileserver.github@d5vd.com>
+
+=head1 LICENSE
+
+B<psgi-auth-fileserver> is free software. It comes without any warranty, to the extent permitted
+by applicable law.
+
+B<psgi-auth-fileserver> is released under the I<WTFPL Version 2.0> license - L<http://sam.zoy.org/wtfpl/COPYING>
+
+0. You just DO WHAT THE FUCK YOU WANT TO.
+
+=cut
