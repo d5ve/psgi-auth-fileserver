@@ -1,11 +1,12 @@
 use strict;
 use warnings;
 
-use Data::Dumper;
+use Data::Dumper; $Data::Dumper::Sortkeys = 1;
 use Plack::App::Directory;
 use Plack::Builder;
 use Plack::Middleware::Auth::Form;
 use Plack::Request;
+use Plack::Session::Store::File;
 
 
 #
@@ -14,47 +15,34 @@ use Plack::Request;
 #   Else redirect to /private/login.
 # Request for anything else => 404
 
-my $app = sub {
-    my $env = shift;
+my $app = builder {
+    enable "Session", state => 'Cookie', store => 'File';
+    enable 'Auth::Form', authenticator => \&check_pass;
 
-    my $req = Plack::Request->new($env);
-    my $path_info = $req->path_info;
+    enable sub {
+        my $app = shift;
+        return sub {
+           my $env = shift;
+           if ($env->{'psgix.session'}{user_id}) {
+               return $app->($env);
+           }
+           elsif ( $env->{PATH_INFO} =~ m{^/log(in|out)$}xms ) {
+               return $app->($env);
+           }
 
-    my $res;
+           return [ 302, [ Location => '/login' ], [""] ];
+        }
+    };
 
-    if ( $path_info eq '/private' ) {
-        $res = $req->new_response();
-        $res->redirect('/private/login');
-    }
-    elsif ( $path_info eq '/private/login' ) {
-        my $inner_app = Plack::Middleware::Auth::Form->new();
-    }
-    elsif ( $path_info =~ m{ \A /private/ }xms ) {
-        $res = $req->new_response();
-    }
-    else {
-        $res = $req->new_response(404); # new Plack::Response
-    }
-
-
-    $res->finalize;
+    Plack::App::Directory->new( { root => 'private' } )->to_app;
 };
-
-__END__
-
-my $auth_app = builder {
-    mount '/private' => builder {
-        enable 'Session';
-        enable 'Auth::Form', authenticator => \&check_pass;
-        #$app;
-        Plack::App::Directory->new( { root => "private/" } )->to_app;
-    },
-    ;
-};
-
-return $auth_app;
 
 sub check_pass {
-    #print STDERR Dumper(\@_);
-    1
+    my ($username, $password, $env) = @_;
+
+    if ( $username eq 'barry' && $password eq 'qwerty123' ) {
+        return 1;
+    }
+
+    return;
 }
