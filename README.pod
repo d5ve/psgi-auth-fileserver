@@ -2,16 +2,36 @@
 
 psgi-auth-fileserver - PSGI-based HTTP fileserver with cookie auth
 
-=head1 STATUS
-
-NO RUNNING CODE YET
-
 =head1 DESCRIPTION
 
 Simple fileserver app using PSGI. Supports authentication by cookie header.
 
 Created because some device browsers don't support basic auth (and basic auth
 is a bit clunky anyhow).
+
+auth_fileserver.psgi holds the application itself, which has the following behaviour:
+
+=over 4
+
+=item * Requests for / give 404.
+
+=item * Requests for /public serve up file and directory contents.
+
+=item * Requests for /private require a login and cookie auth.
+
+=back
+
+Run with: C<$ plackup auth_fileserver.psgi>
+
+This currently needs to be behind a reverse proxy supporting SSL.
+
+=head1 TODO
+
+=over 4
+
+=item * Direct SSL support via https://github.com/miyagawa/Starman/pull/77
+
+=back
 
 =head1 DEPENDENCIES
 
@@ -21,11 +41,15 @@ is a bit clunky anyhow).
 
 =item * Plack::Middleware::Session
 
+=item * Plack::Middleware::Auth::Form
+
 =back
 
 =head1 AUTHOR
 
 Dave Webb L<psgi-auth-fileserver.github@d5ve.com|mailto:psgi-auth-fileserver.github@d5ve.com>
+
+With help from #plack on irc.perl.org 
 
 =head1 LICENSE
 
