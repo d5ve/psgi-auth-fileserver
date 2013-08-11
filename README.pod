@@ -11,13 +11,15 @@ is a bit clunky anyhow).
 
 auth_fileserver.psgi holds the application itself, which has the following behaviour:
 
-=over 4
+=over
 
 =item * Requests for / give 404.
 
 =item * Requests for /public serve up file and directory contents.
 
 =item * Requests for /private require a login and cookie auth.
+
+=item * Usernames and bcrypt-hashed passwords are stored in the application itself.
 
 =back
 
@@ -27,7 +29,7 @@ This currently needs to be behind a reverse proxy supporting SSL.
 
 =head1 TODO
 
-=over 4
+=over
 
 =item * Direct SSL support via https://github.com/miyagawa/Starman/pull/77
 
@@ -35,7 +37,9 @@ This currently needs to be behind a reverse proxy supporting SSL.
 
 =head1 DEPENDENCIES
 
-=over 4
+=over
+
+=item * Digest::Bcrypt
 
 =item * Plack
 

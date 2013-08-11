@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use Data::Dumper; $Data::Dumper::Sortkeys = 1;
+use Digest::Bcrypt;
 use Plack::App::Directory;
 use Plack::Builder;
 use Plack::Middleware::Auth::Form;
@@ -62,7 +63,34 @@ my $app = builder {
 sub check_credentials {
     my ( $username, $password, $env ) = @_;
 
-    if ( $username eq 'barry' && $password eq 'qwerty123' ) {
+    # Generate the 16-byte salts with something like the following bash
+    # one-liner, which uses most printable chars.
+    # head -c 500 /dev/urandom | tr -dc "a-zA-Z0-9 !\"£$%^&*()_+-=[]{};\\:@|,./<>?~\`'" | head -c 16 ; echo
+
+    # Calculate the hashed passwords with something like the following perl oneliner.
+    # perl -MDigest::Bcrypt -lwe 'my $b = Digest::Bcrypt->new(); $b->cost(10); $b->salt(shift); $b->add(shift); print $b->hexdigest' "THE_SALT" "THE_PASSWORD"
+    my %credentials = (
+        barry => {
+            salt      => q{hNzYJwU>2(3@Kv^k},
+            hashed_pw => '484c5f81602a6a0ccda78491dc046ce12ffa0b298e002b',
+        },
+        sally => {
+            salt      => q{E~n[h_D4j7R~@~nL},
+            hashed_pw => 'dd205bfdbe7575db02fbeddb973dbe91cf7a047a6c35c7',
+
+        },
+    );
+
+    my $stored_credentials = $credentials{$username} or return;
+
+    my $bc = Digest::Bcrypt->new;
+    $bc->cost(10); # A higher cost means longer processing time.
+    $bc->salt( $stored_credentials->{salt} );
+    $bc->add($password);
+
+    my $supplied_hashed_pw = $bc->hexdigest;
+
+    if ( $stored_credentials->{hashed_pw} eq $supplied_hashed_pw ) {
         return {
             user_id  => $username,
             redir_to => "/$private_dir/",
